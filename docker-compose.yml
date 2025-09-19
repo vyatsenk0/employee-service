@@ -1,0 +1,35 @@
+services: # контейнеры
+
+  db: # posgresql контейнер
+    image: postgres:15
+    container_name: employees_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: employees
+    ports:
+      - "5432:5432" # проброс порта, чтобы подключиться с windows
+    volumes:
+      - db_data:/var/lib/postgresql/data # сохранить данные БД в docker volume
+    healthcheck: # проверка готовности БД
+      test: ["CMD-SHELL", "pg_isready -U admin -d employees"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 5s
+
+  app: # Go service контейнер
+    build: .
+    container_name: employee_service_app
+    ports:
+      - "8080:8080" # проброс порта для API
+    depends_on:
+      db: # сначала поднять контейнер db
+        condition: service_healthy 
+    environment:
+                                # sslmode=disable для исправления TLS-ошибки
+      DATABASE_URL: postgres://admin:admin@db:5432/employees?sslmode=disable
+
+volumes:
+  db_data: # docker volume для сохранения данных БД
