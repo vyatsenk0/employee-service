@@ -13,9 +13,9 @@
 - github.com/joho/godotenv - для загрузки .env
 
 # Чтобы запустить контейнер (в powershell):
-cd employee-service
-docker-compose up --build -d
+- cd employee-service
+- docker-compose up --build -d
 
 # Чтобы запустить тесты (локально через powershell терминал)
-## Сперва дождаться пока статус контейнера employees_db станет healthy
-go test -v
+### Сперва дождаться пока статус контейнера employees_db станет healthy
+- go test -v
